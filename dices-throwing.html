@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Throw dies</title>
+        <style>
+            #main {
+                margin: auto;
+                width: 204px;
+                height: 220px;
+                background-color: #d0f0b0;
+                text-align: center;
+            }
+            .dieRect {
+                width: 80px;
+                height: 80px;
+                background-color: white;
+                border: 1px solid black;
+                border-radius: 18px;
+                margin: 10px;
+                float:left;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="main">
+            <div class="dieRect">
+                <canvas id="firstDie"></canvas>
+            </div>
+            <div class="dieRect">
+                <canvas id="secondDie"></canvas>
+            </div>
+            <button type="button" onclick="throwDies()" id="buttonThrow">Throw</button>
+            <p>Result: <span id="result"></span></p>
+            <input type="checkbox" id="double">
+            <label for="double">automatic throw after doubles dice</label>
+        </div>
+
+        <script>
+            let dotsForDie = [[[40, 40]], [[16, 64], [64, 16]], [[16, 64], [40, 40], [64, 16]], 
+            [[16, 16], [16, 64], [64, 16], [64, 64]], [[16, 16], [16, 64], [40, 40], [64, 16], [64, 64]], 
+            [[16, 16], [16, 40], [16, 64], [64, 16], [64, 40], [64, 64]]];
+            let firstDieValue;
+            let secondDieValue;
+
+            function getRandomDigits() {
+                firstDieValue = Math.floor(Math.random() * 6);
+                secondDieValue = Math.floor(Math.random() * 6);
+            }
+
+            function drawDie(coords, dieCanvas) {
+                let canvas = document.getElementById(dieCanvas);
+                let context = canvas.getContext("2d");
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < coords.length; i++){
+                    let dotOnDie = canvas.getContext("2d");
+                    dotOnDie.beginPath();
+                    dotOnDie.arc(coords[i][0], coords[i][1], 8, 0, 2 * Math.PI);
+                    dotOnDie.fill();
+                    dotOnDie.stroke();
+                };
+            };
+            
+            function makeThrow() {
+                getRandomDigits();
+                drawDie(dotsForDie[firstDieValue], "firstDie");
+                drawDie(dotsForDie[secondDieValue], "secondDie");
+            };
+
+            function displayResult() {
+                var resultVariable = document.getElementById("result");
+                var currentResult = firstDieValue + secondDieValue + 2;
+                if (firstDieValue !== secondDieValue) {
+                    resultVariable.innerText = currentResult;
+                } else {
+                    resultVariable.innerText = currentResult + " -  doubles dice!";
+                };
+            }
+
+            function availableThrowButton() {
+                if (document.getElementById("double").checked === true) {
+                    if (firstDieValue === secondDieValue) {
+                        setTimeout(throwDies, 1500);
+                    } else {
+                        document.getElementById("buttonThrow").disabled = false;
+                    }
+                } else {
+                    document.getElementById("buttonThrow").disabled = false;
+                }
+            };
+
+            function throwDies() {
+                document.getElementById("buttonThrow").disabled = true;
+                for (let i = 50; i < 401; i += 50) {
+                    setTimeout(makeThrow, i);
+                }
+                setTimeout(displayResult, 410);
+                setTimeout(availableThrowButton, 420)
+            };
+
+            makeThrow();
+            displayResult();
+        </script>
+    </body>
+</html>
